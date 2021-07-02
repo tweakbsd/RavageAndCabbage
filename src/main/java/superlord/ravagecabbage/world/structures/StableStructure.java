@@ -158,7 +158,7 @@ public class StableStructure extends Structure<NoFeatureConfig> {
             }
             if ("adult".equals(function)) {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
-                RavagerEntity entity = EntityType.RAVAGER.create(worldIn.getWorld());
+                RCRavagerEntity entity = RCEntities.RAVAGER.get().create(worldIn.getWorld());
                 if (entity != null) {
                     entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                     entity.onInitialSpawn(worldIn, worldIn.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, null, null);

@@ -80,6 +80,7 @@ import superlord.ravagecabbage.items.IRavagerHornArmorItem;
 import static net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent;
 
 public class RCRavagerEntity extends TameableEntity implements IRideable, IEquipable {
+
 	private static final Predicate<Entity> field_213690_b = (p_213685_0_) -> {
 		return p_213685_0_.isAlive() && !(p_213685_0_ instanceof RCRavagerEntity);
 	};
@@ -303,7 +304,7 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 	}
 
 	public static AttributeModifierMap.MutableAttribute func_234233_eS_() {
-		return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 100.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3D).createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.75D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D).createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.5D).createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D).createMutableAttribute(Attributes.ARMOR, 0D);
+		return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 80.0).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3D).createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.75D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0).createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.5D).createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D).createMutableAttribute(Attributes.ARMOR, 0D);
 	}
 
 	@Override
@@ -428,6 +429,20 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 			double d1 = this.getPosY() + (double)this.getHeight() - 0.3D;
 			double d2 = this.getPosZ() + (double)this.getWidth() * Math.cos((this.renderYawOffset * ((float)Math.PI / 180F))) + (this.rand.nextDouble() * 0.6D - 0.3D);
 			this.world.addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.4980392156862745D, 0.5137254901960784D, 0.5725490196078431D);
+		}
+
+	}
+
+	@Override
+	protected void onGrowingAdult() {
+		if (this.isChild()) {
+			this.experienceValue = 3;
+			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(0.5D);
+			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.00);
+		} else {
+			this.experienceValue = 5;
+			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6.0D);
+			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(80.00);
 		}
 
 	}
