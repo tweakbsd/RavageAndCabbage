@@ -154,9 +154,10 @@ public class StableStructure extends Structure<NoFeatureConfig> {
         protected void handleDataMarker(String function, BlockPos pos, IServerWorld worldIn, Random rand, MutableBoundingBox sbb) {
             if ("baby".equals(function)) {
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
-                RCRavagerEntity entity = RCEntities.RAVAGER.get().create(worldIn.getWorld());
+                //RCRavagerEntity entity = RCEntities.RAVAGER.get().create(worldIn.getWorld());
+                RavagerEntity entity = EntityType.RAVAGER.create(worldIn.getWorld());
                 if (entity != null) {
-                    entity.setGrowingAge(-24000);
+                    //entity.setGrowingAge(-24000);
                     entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
                     entity.onInitialSpawn(worldIn, worldIn.getDifficultyForLocation(pos), SpawnReason.STRUCTURE, null, null);
                     worldIn.addEntity(entity);

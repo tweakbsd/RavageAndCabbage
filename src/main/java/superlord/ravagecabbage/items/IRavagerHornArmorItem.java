@@ -6,4 +6,5 @@ public interface IRavagerHornArmorItem {
 
     ArmorMaterial getArmorMaterial();
     int getArmorValue();
+    int getAttackDamageBonus();
 }

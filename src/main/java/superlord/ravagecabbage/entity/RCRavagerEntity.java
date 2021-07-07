@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -19,8 +20,7 @@ import net.minecraft.entity.IRideable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.Pose;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.*;
 import net.minecraft.entity.ai.goal.BreedGoal;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
@@ -73,9 +73,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import superlord.ravagecabbage.RavageAndCabbage;
 import superlord.ravagecabbage.init.RCEntities;
 import superlord.ravagecabbage.init.RCItems;
 import superlord.ravagecabbage.items.IRavagerHornArmorItem;
+import superlord.ravagecabbage.config.RCConfig;
 
 import static net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent;
 
@@ -246,8 +248,7 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 	@Override
 	public void setTamed(boolean tamed) {
 		super.setTamed(tamed);
-		this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(160);
-		this.setHealth(160);
+		// NOTE: For now I don't see any reasonably attribute changes
 	}
 
 	@Override
@@ -304,7 +305,7 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 	}
 
 	public static AttributeModifierMap.MutableAttribute func_234233_eS_() {
-		return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, 80.0).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3D).createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.75D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0).createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.5D).createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D).createMutableAttribute(Attributes.ARMOR, 0D);
+		return MobEntity.func_233666_p_().createMutableAttribute(Attributes.MAX_HEALTH, RCConfig.adultRavagerHealth).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3D).createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.75D).createMutableAttribute(Attributes.ATTACK_DAMAGE, RCConfig.adultRavagerBaseAttack).createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.5D).createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D).createMutableAttribute(Attributes.ARMOR, 0D);
 	}
 
 	@Override
@@ -314,6 +315,13 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn) {
+
+		if(this.isTamed() && (entityIn instanceof PlayerEntity) && this.getOwnerId().equals(entityIn.getUniqueID())) {
+			// NOTE: Do not allow to deal damage to owner
+			return false;
+		}
+
+
 		this.world.setEntityState(this, (byte)4);
 		return super.attackEntityAsMob(entityIn);
 	}
@@ -437,12 +445,12 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 	protected void onGrowingAdult() {
 		if (this.isChild()) {
 			this.experienceValue = 3;
-			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(0.5D);
-			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(40.00);
+			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(RCConfig.babyRavagerBaseAttack);
+			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(RCConfig.babyRavagerHealth);
 		} else {
 			this.experienceValue = 5;
-			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(6.0D);
-			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(80.00);
+			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(RCConfig.adultRavagerBaseAttack);
+			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(RCConfig.adultRavagerHealth);
 		}
 
 	}
@@ -532,6 +540,27 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 			if(item instanceof IRavagerHornArmorItem) {
 				IRavagerHornArmorItem hornArmor = (IRavagerHornArmorItem)item;
 				this.getAttribute(Attributes.ARMOR).setBaseValue((double) hornArmor.getArmorValue());
+
+				Multimap<Attribute, AttributeModifier> attributeModifierMap = itemStack.getAttributeModifiers(slotIn);
+				if (!attributeModifierMap.isEmpty()) {
+					//try {
+						ModifiableAttributeInstance attackDamageAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+						if(attackDamageAttribute != null) {
+							attackDamageAttribute.removeAllModifiers();
+							for (AttributeModifier modifier : attributeModifierMap.get(Attributes.ATTACK_DAMAGE)) {
+								attackDamageAttribute.applyNonPersistentModifier(modifier);
+								RavageAndCabbage.LOGGER.error("Applied ATTACK_DAMAGE attribute modifier from Horn Armor Item: " + modifier.toString());
+							}
+						} else {
+							RavageAndCabbage.LOGGER.error("Could not change Attributes.ATTACK_DAMAGE of Ravager ");
+						}
+
+					//} catch(NullPointerException exception) {
+					//	RavageAndCabbage.LOGGER.error("Could not remove all attribute modifiers from Ravager ");
+					//}
+
+				}
+
 				// Update this Entity's Atttributes.ARMOR base
 			}
 		}
