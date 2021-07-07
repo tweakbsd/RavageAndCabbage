@@ -23,5 +23,5 @@ public class RCConfig {
             RavageAndCabbage.LOGGER.warn("An exception was caused trying to load the config for Ravage & Cabbage.");
             e.printStackTrace();
         }
-
+    }
 }
