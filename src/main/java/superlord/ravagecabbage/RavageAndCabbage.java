@@ -22,8 +22,10 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -35,6 +37,8 @@ import superlord.ravagecabbage.entity.CabbagerEntity;
 import superlord.ravagecabbage.entity.RCRavagerEntity;
 import superlord.ravagecabbage.init.*;
 import superlord.ravagecabbage.network.RCNetwork;
+import superlord.ravagecabbage.config.RCConfig;
+import superlord.ravagecabbage.config.ConfigHolder;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -65,6 +69,15 @@ public class RavageAndCabbage {
 
     private void registerCommon(final FMLCommonSetupEvent event) {
         RCNetwork.init();
+    }
+
+    @SubscribeEvent
+    public void onModConfigEvent(final ModConfig.ModConfigEvent event) {
+        final ModConfig config = event.getConfig();
+        // Rebake the configs when they change
+        if (config.getSpec() == ConfigHolder.COMMON_SPEC) {
+            RCConfig.bake(config);
+        }
     }
 
     public void setup(final FMLCommonSetupEvent event) {

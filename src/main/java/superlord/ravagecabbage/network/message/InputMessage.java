@@ -13,6 +13,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.Level;
 import superlord.ravagecabbage.RavageAndCabbage;
+import superlord.ravagecabbage.config.RCConfig;
 import superlord.ravagecabbage.entity.RCRavagerEntity;
 
 import java.util.function.Supplier;
@@ -46,7 +47,8 @@ public class InputMessage {
                         ravager.world.setEntityState(ravager, (byte)4);
                         ravager.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
 
-                        float damageAmount = 8.0F;  // NOTE: Need a consitent fallback value
+
+                        float damageAmount = ravager.isChild() ? RCConfig.babyRavagerBaseAttack : RCConfig.adultRavagerBaseAttack;
                         ModifiableAttributeInstance attackDamageAttribute = ravager.getAttribute(Attributes.ATTACK_DAMAGE);
                         if(attackDamageAttribute != null) {
                             damageAmount = (float)attackDamageAttribute.getValue();
