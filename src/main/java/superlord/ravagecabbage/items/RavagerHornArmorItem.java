@@ -13,7 +13,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import superlord.ravagecabbage.RavageAndCabbage;
 
+import java.util.UUID;
+
 public class RavagerHornArmorItem extends Item implements IRavagerHornArmorItem {
+
+    private final UUID HORN_ARMOR_MODFIER = UUID.fromString("845DB27C-4711-495F-8C9F-6020A9A58B62");
+    private final UUID HORN_ARMOR_TOUGHNESS_MODFIER = UUID.fromString("845DB27C-4711-495F-8C9F-6020A9A58B62");
+
     private final int armorValue;
     private final int attackDamageBonus;
     private final ResourceLocation tex;
@@ -38,9 +44,13 @@ public class RavagerHornArmorItem extends Item implements IRavagerHornArmorItem 
 
     private Multimap<Attribute, AttributeModifier> hornArmorModifiers;
     private Multimap<Attribute, AttributeModifier> bakeHornArmorModifiers() {
+
         if(this.hornArmorModifiers == null) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifierMap = ImmutableMultimap.builder();
-            attributeModifierMap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Horn Armor modifier", (double)this.getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
+
+            attributeModifierMap.put(Attributes.ARMOR, new AttributeModifier(HORN_ARMOR_MODFIER, "Horn Armor modifier", this.getArmorValue(), AttributeModifier.Operation.ADDITION));
+            attributeModifierMap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(HORN_ARMOR_TOUGHNESS_MODFIER, "Horn Armor Toughness modifier", this.getArmorMaterial().getToughness(), AttributeModifier.Operation.ADDITION));
+            attributeModifierMap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Horn Attack modifier", (double)this.getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
             this.hornArmorModifiers = attributeModifierMap.build();
         }
 

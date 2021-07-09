@@ -1,6 +1,8 @@
 package superlord.ravagecabbage.entity;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -78,6 +80,7 @@ import superlord.ravagecabbage.init.RCEntities;
 import superlord.ravagecabbage.init.RCItems;
 import superlord.ravagecabbage.items.IRavagerHornArmorItem;
 import superlord.ravagecabbage.config.RCConfig;
+
 
 import static net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent;
 
@@ -531,6 +534,28 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 		}
 	}
 
+	private void applyAttributeModifiers(Multimap<Attribute, AttributeModifier> attributeModifierMap) {
+
+		if(attributeModifierMap.isEmpty()) {
+			return;
+		}
+
+		List<Attribute> attributes =  Arrays.asList(Attributes.ATTACK_DAMAGE, Attributes.ARMOR, Attributes.ARMOR_TOUGHNESS);
+		// NOTE: Supported attributes
+
+		for(Attribute attribute : attributes) {
+			ModifiableAttributeInstance modifiableAttribute = this.getAttribute(attribute);
+			if(modifiableAttribute == null) {
+				RavageAndCabbage.LOGGER.error("Could not change Attribute " + attribute.toString() + " of Ravager");
+				continue;
+			}
+			modifiableAttribute.removeAllModifiers();
+			for (AttributeModifier modifier : attributeModifierMap.get(attribute)) {
+				modifiableAttribute.applyNonPersistentModifier(modifier);
+			}
+		}
+
+	}
 
 	public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack itemStack) {
 		super.setItemStackToSlot(slotIn, itemStack);
@@ -538,30 +563,8 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 		if(slotIn == EquipmentSlotType.HEAD && itemStack != null && !itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			if(item instanceof IRavagerHornArmorItem) {
-				IRavagerHornArmorItem hornArmor = (IRavagerHornArmorItem)item;
-				this.getAttribute(Attributes.ARMOR).setBaseValue((double) hornArmor.getArmorValue());
-
-				Multimap<Attribute, AttributeModifier> attributeModifierMap = itemStack.getAttributeModifiers(slotIn);
-				if (!attributeModifierMap.isEmpty()) {
-					//try {
-						ModifiableAttributeInstance attackDamageAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
-						if(attackDamageAttribute != null) {
-							attackDamageAttribute.removeAllModifiers();
-							for (AttributeModifier modifier : attributeModifierMap.get(Attributes.ATTACK_DAMAGE)) {
-								attackDamageAttribute.applyNonPersistentModifier(modifier);
-								RavageAndCabbage.LOGGER.error("Applied ATTACK_DAMAGE attribute modifier from Horn Armor Item: " + modifier.toString());
-							}
-						} else {
-							RavageAndCabbage.LOGGER.error("Could not change Attributes.ATTACK_DAMAGE of Ravager ");
-						}
-
-					//} catch(NullPointerException exception) {
-					//	RavageAndCabbage.LOGGER.error("Could not remove all attribute modifiers from Ravager ");
-					//}
-
-				}
-
-				// Update this Entity's Atttributes.ARMOR base
+				//IRavagerHornArmorItem hornArmor = (IRavagerHornArmorItem)item;
+				this.applyAttributeModifiers(itemStack.getAttributeModifiers(slotIn));
 			}
 		}
 	}
