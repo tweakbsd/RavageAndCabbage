@@ -53,9 +53,12 @@ public class RavageAndCabbage {
 
     public RavageAndCabbage() {
     	IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+
         bus.addListener(this::registerCommon);
         bus.addListener(this::setup);
+        bus.addListener(this::onModConfigEvent);
         bus.addListener(this::registerEntityAttributes);
+
 
         RCEntities.REGISTER.register(bus);
         RCItems.REGISTER.register(bus);
@@ -65,6 +68,7 @@ public class RavageAndCabbage {
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(EventPriority.NORMAL, this::addDimensionalSpacing);
         forgeBus.addListener(EventPriority.HIGH, this::biomeModification);
+
     }
 
     private void registerCommon(final FMLCommonSetupEvent event) {
