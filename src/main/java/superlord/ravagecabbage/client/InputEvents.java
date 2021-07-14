@@ -5,6 +5,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.Level;
 import superlord.ravagecabbage.RavageAndCabbage;
 import superlord.ravagecabbage.init.RCKeybinds;
 import superlord.ravagecabbage.network.RCNetwork;
@@ -25,12 +26,11 @@ public class InputEvents {
         Minecraft mc = Minecraft.getInstance();
         if (mc.world == null) return;
         onInput(mc, event.getButton(), event.getAction());
-
-        //event.
     }
 
     private static void onInput(Minecraft mc, int key, int action) {
         if (mc.currentScreen == null && RCKeybinds.roarKey.isPressed()) {
+            RavageAndCabbage.LOGGER.log(Level.INFO, "Sending Ravager Attack Key is pressed to server...");
             RCNetwork.CHANNEL.sendToServer(new InputMessage(key));
         }
     }

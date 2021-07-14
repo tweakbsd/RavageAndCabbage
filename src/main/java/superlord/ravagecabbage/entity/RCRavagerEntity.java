@@ -450,10 +450,14 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 			this.experienceValue = 3;
 			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(RCConfig.babyRavagerBaseAttack);
 			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(RCConfig.babyRavagerHealth);
+			if(this.getHealth() > RCConfig.babyRavagerHealth) {
+				this.setHealth( (float)RCConfig.babyRavagerHealth);
+			}
 		} else {
 			this.experienceValue = 5;
 			this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(RCConfig.adultRavagerBaseAttack);
 			this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(RCConfig.adultRavagerHealth);
+			this.setHealth( (float)RCConfig.adultRavagerHealth);
 		}
 
 	}
@@ -472,6 +476,7 @@ public class RCRavagerEntity extends TameableEntity implements IRideable, IEquip
 		if (uuid != null) {
 			ravagerentity.setOwnerId(uuid);
 			ravagerentity.setTamed(true);
+			ravagerentity.setHealth((float)RCConfig.babyRavagerHealth);
 		}
 		return ravagerentity;
 	}

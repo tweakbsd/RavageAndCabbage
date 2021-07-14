@@ -35,6 +35,7 @@ public class InputMessage {
 
     public static void handle(InputMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
+        RavageAndCabbage.LOGGER.log(Level.INFO, "Handling Ravager Attack Key Message on server...");
         context.enqueueWork(() -> {
             PlayerEntity player = context.getSender();
             Entity vehicle = player.getRidingEntity();
@@ -56,6 +57,9 @@ public class InputMessage {
 
                         for (Entity entity : ravager.world.getEntitiesWithinAABB(LivingEntity.class, ravager.getBoundingBox().grow(4.0D))) {
                             if (!(entity instanceof RCRavagerEntity) && !(entity instanceof PlayerEntity)) {
+                                // NOTE: This ^^^^ isn't right I think. A Ravager can't hit another Ravager or Player that way?!?! It should probably be:
+                                //       entity.getEntityId() != ravager.getOwner().getEntityId()
+                                //       entity.getEntityId() != ravager.getEntityId()
 
                                 entity.attackEntityFrom(DamageSource.causeMobDamage(ravager), damageAmount);
 
@@ -68,6 +72,8 @@ public class InputMessage {
                         RavageAndCabbage.LOGGER.log(Level.INFO,"Ravager INPUT MESSAGE IGNORED, attackTick != 0");
                     }
                 }
+            } else {
+                RavageAndCabbage.LOGGER.log(Level.INFO, "Ravager Attack Key Message not processed player vehicle wrong...");
             }
         });
         context.setPacketHandled(true);

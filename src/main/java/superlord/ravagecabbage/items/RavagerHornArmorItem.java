@@ -47,10 +47,9 @@ public class RavagerHornArmorItem extends Item implements IRavagerHornArmorItem 
 
         if(this.hornArmorModifiers == null) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> attributeModifierMap = ImmutableMultimap.builder();
-
             attributeModifierMap.put(Attributes.ARMOR, new AttributeModifier(HORN_ARMOR_MODFIER, "Horn Armor modifier", this.getArmorValue(), AttributeModifier.Operation.ADDITION));
             attributeModifierMap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(HORN_ARMOR_TOUGHNESS_MODFIER, "Horn Armor Toughness modifier", this.getArmorMaterial().getToughness(), AttributeModifier.Operation.ADDITION));
-            attributeModifierMap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Horn Attack modifier", (double)this.getAttackDamageBonus(), AttributeModifier.Operation.ADDITION));
+            attributeModifierMap.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Horn Attack modifier", Math.ceil(this.getAttackDamageBonus()), AttributeModifier.Operation.ADDITION));
             this.hornArmorModifiers = attributeModifierMap.build();
         }
 
